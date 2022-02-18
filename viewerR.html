@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>AmbiLightViewer Horizonatlly Mirrored</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+        html {
+            background-color: #000000;
+        }
+
+        .absolute {
+            position: fixed;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div id="top" style="top: 0; left: 0; flex-direction: row-reverse;" class="absolute"></div>
+    <div id="right" style="top: 0; left: 0; flex-direction: column;" class="absolute"></div>
+    <div id="bottom" style="bottom: 0; left: 0; flex-direction: row-reverse;" class="absolute"></div>
+    <div id="left" style="top: 0; right: 0; flex-direction: column;" class="absolute"></div>
+    <script src="/ambi.js"></script>
+</body>
+</html>
