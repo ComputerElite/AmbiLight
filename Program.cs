@@ -44,6 +44,13 @@ namespace AmbiLightFramework
             server.AddRouteFile("/ambi.js", "ambi.js");
             server.AddRouteFile("/viewerreversed", "viewerR.html");
             server.AddRouteFile("/", "index.html");
+            server.AddWSRoute("/", new Action<SocketServerRequest>(request =>
+            {
+                if(request.bodyString == "ambilight")
+                {
+                    request.SendString(JsonSerializer.Serialize(AmbiLightController.GetAmbiLight(config.top, config.right, config.bottom, config.left, width, height, config.sample, config.normalise, bmpScreenshot, g)));
+                }
+            }));
             server.StartServer(503);
         }
     }

@@ -6,9 +6,39 @@ var top = document.getElementById("top")
         const urlParams = new URLSearchParams(window.location.search);
         const wait = 1000 / parseInt(urlParams.get('fps'))
 
+        /*
+        //Old HTTP Code
         setInterval(() => {
             fetch("/ambilight").then(res => res.json().then(res => {
-                var topHTML = ""
+                Update(res)
+            }))
+        }, wait)
+        */
+
+        let socket = new WebSocket("ws://" + location.host)
+
+        socket.onopen = e => {
+            console.log("connected with websocket. Sending first ambilight request")
+            socket.send("ambilight")
+        }
+        socket.onmessage = e => {
+            console.log("recieved message. Updating preview and sending new ambilight request")
+            socket.send("ambilight")
+            Update(JSON.parse(e.data))
+        }
+        socket.onclose = e => {
+            if (e.wasClean) {
+                alert(`[close] Connection closed cleanly, code=${e.code} reason=${e.reason}`)
+              } else {
+                alert('[close] Connection died. RIP. Reload the page please')
+            }
+        }
+        socket.onerror = e => {
+            console.log(`[error] ${e.message}`);
+        }
+
+        function Update(res) {
+            var topHTML = ""
                 var topWidth = 100 / res.top.length
                 var rightHeight = 100 / res.right.length
                 var leftHeight = 100 / res.left.length
@@ -63,5 +93,4 @@ var top = document.getElementById("top")
                     `
                 })
                 document.getElementById("left").innerHTML = leftHTML
-            }))
-        }, wait)
+        }
