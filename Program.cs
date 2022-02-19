@@ -55,7 +55,7 @@ namespace AmbiLightFramework
         public int bottom { get; set; } = 40;
         public int left { get; set; } = 40;
         public int sample { get; set; } = 500;
-        public bool normalise { get; set; } = true;
+        public bool normalise { get; set; } = false;
 
         public void Save()
         {
