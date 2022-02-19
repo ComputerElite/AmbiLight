@@ -1,4 +1,5 @@
-﻿using ComputerUtils.Webserver;
+﻿using ComputerUtils.Logging;
+using ComputerUtils.Webserver;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text.Json;
@@ -82,6 +83,16 @@ namespace AmbiLightFramework
         public int g { get; set; }
         public int b { get; set; }
         public string hex { get; set; }
+
+        public override string ToString()
+        {
+            return "r: " + r + " g: " + g + " b: " + b + " hex: #" + hex;
+        }
+
+        public void SetHex()
+        {
+            hex = r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
+        }
     }
 
     public class AmbiLightController
@@ -106,35 +117,28 @@ namespace AmbiLightFramework
             int topSpacing = width / top;
             for(int x = 0; x < width; x += topSpacing)
             {
-                output.top.Add(ColorCalculator.GetColorOfPixel(x, 0, topSpacing, sample, spacing, spacing, bmpScreenshot));
+                output.top.Add(ColorCalculator.GetColorOfPixel(x, 0, topSpacing, sample, spacing, spacing, normalise, bmpScreenshot));
             }
 
             //  right
             int rightSpacing = height / right;
             for (int y = 0; y < height; y += rightSpacing)
             {
-                output.right.Add(ColorCalculator.GetColorOfPixel(width, y, sample, rightSpacing, spacing, spacing, bmpScreenshot));
+                output.right.Add(ColorCalculator.GetColorOfPixel(width, y, sample, rightSpacing, spacing, spacing, normalise, bmpScreenshot));
             }
 
             // bottom
             int bottomSpacing = width / bottom;
             for (int x = 0; x < width; x += bottomSpacing)
             {
-                output.bottom.Add(ColorCalculator.GetColorOfPixel(x, height, bottomSpacing, sample, spacing, spacing, bmpScreenshot));
+                output.bottom.Add(ColorCalculator.GetColorOfPixel(x, height, bottomSpacing, sample, spacing, spacing, normalise, bmpScreenshot));
             }
 
             //  left
             int leftSpacing = height / left;
             for (int y = 0; y < height; y += leftSpacing)
             {
-                output.left.Add(ColorCalculator.GetColorOfPixel(0, y, sample, leftSpacing, spacing, spacing, bmpScreenshot));
-            }
-            if(normalise)
-            {
-                output.top.ForEach(x => ColorCalculator.Normalise(x));
-                output.right.ForEach(x => ColorCalculator.Normalise(x));
-                output.bottom.ForEach(x => ColorCalculator.Normalise(x));
-                output.left.ForEach(x => ColorCalculator.Normalise(x));
+                output.left.Add(ColorCalculator.GetColorOfPixel(0, y, sample, leftSpacing, spacing, spacing, normalise, bmpScreenshot));
             }
             return output;
         }
@@ -144,16 +148,17 @@ namespace AmbiLightFramework
     {
         public static AmbiLightColor Normalise(AmbiLightColor input)
         {
-            double multiply = 1.0;
+            double multiply = 255.0;
             if (255 / (double)input.r < multiply) multiply = 255 / (double)input.r;
             if (255 / (double)input.g < multiply) multiply = 255 / (double)input.g;
             if (255 / (double)input.b < multiply) multiply = 255 / (double)input.b;
             input.r = (int)(input.r * multiply);
             input.g = (int)(input.g * multiply);
             input.b = (int)(input.b * multiply);
+            input.SetHex();
             return input;
         }
-        public static AmbiLightColor GetColorOfPixel(int xS, int yS, int width, int height, int xIntervall, int yIntervall, Bitmap source)
+        public static AmbiLightColor GetColorOfPixel(int xS, int yS, int width, int height, int xIntervall, int yIntervall, bool normalise, Bitmap source)
         {
             int yMin = yS - height;
             int yMax = yS + height;
@@ -186,6 +191,10 @@ namespace AmbiLightFramework
             r /= total;
             g /= total;
             b /= total;
+            if(normalise)
+            {
+                return ColorCalculator.Normalise(new AmbiLightColor() { r = r, g = g, b = b, hex = r.ToString("X2") + g.ToString("X2") + b.ToString("X2") });
+            }
             return new AmbiLightColor() { r = r, g = g, b = b, hex = r.ToString("X2") + g.ToString("X2") + b.ToString("X2") };
         }
     }

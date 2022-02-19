@@ -22,27 +22,27 @@
     <table>
         <tr>
             <td>top (amount of color values computed for the top of the screen)</td>
-            <td><input id="top" type="number"></td>
+            <td><input onchange="Save()" id="top" type="number"></td>
         </tr>
         <tr>
             <td>right (amount of color values computed for the right of the screen)</td>
-            <td><input id="right" type="number"></td>
+            <td><input onchange="Save()" id="right" type="number"></td>
         </tr>
         <tr>
             <td>bottom (amount of color values computed for the bottom of the screen)</td>
-            <td><input id="bottom" type="number"></td>
+            <td><input onchange="Save()" id="bottom" type="number"></td>
         </tr>
         <tr>
             <td>left (amount of color values computed for the left of the screen)</td>
-            <td><input id="left" type="number"></td>
+            <td><input onchange="Save()" id="left" type="number"></td>
         </tr>
         <tr>
             <td>sample (amount of pixels to check for the color; only affects height for top and bottom and width for left and right)</td>
-            <td><input id="sample" type="number"></td>
+            <td><input onchange="Save()" id="sample" type="number"></td>
         </tr>
         <tr>
             <td>normalise (if you want to make one r g b value of the color to 255 which will make them as bright as possible)</td>
-            <td><input id="normalise" type="checkbox"></td>
+            <td><input onchange="Save()" id="normalise" type="checkbox"></td>
         </tr>
     </table>
     <button id="save">save</button>
@@ -53,6 +53,9 @@
         const lefte = document.getElementById("left")
         const samplee = document.getElementById("sample")
         const normalisee = document.getElementById("normalise")
+
+
+
         fetch("/configjson").then(res => res.json().then(res => {
             tope.value = res.top
             righte.value = res.right
@@ -61,7 +64,8 @@
             samplee.value = res.sample
             normalisee.checked = res.normalise
         }))
-        document.getElementById("save").onclick = () => {
+
+        function Save() {
             fetch("/configjson", {
                 method: "POST",
                 body: JSON.stringify({
@@ -72,7 +76,7 @@
                     sample: parseInt(samplee.value),
                     normalise: normalisee.checked
                 })
-            }).then(res => res.text().then(res => alert("saved")))
+            })
         }
     </script>
 </body>
