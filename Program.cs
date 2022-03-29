@@ -2,18 +2,31 @@
 using ComputerUtils.Webserver;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Windows.Forms;
 
 namespace AmbiLightFramework
 {
     class Program
     {
+        public enum SystemMetric
+        {
+            VirtualScreenWidth = 78, // CXVIRTUALSCREEN 0x0000004E 
+            VirtualScreenHeight = 79, // CYVIRTUALSCREEN 0x0000004F 
+        }
+        [DllImport("user32.dll")]
+        public static extern int GetSystemMetrics(SystemMetric metric);
+        public static Size GetVirtualDisplaySize()
+        {
+            var width = GetSystemMetrics(SystemMetric.VirtualScreenWidth);
+            var height = GetSystemMetrics(SystemMetric.VirtualScreenHeight);
+            return new Size(width, height);
+        }
         static void Main(string[] args)
         {
             Console.WriteLine("Computing");
-            int width = Screen.PrimaryScreen.Bounds.Size.Width;
-            int height = Screen.PrimaryScreen.Bounds.Size.Height;
+            int width = GetVirtualDisplaySize().Width;
+            int height = GetVirtualDisplaySize().Height;
             Bitmap bmpScreenshot = new Bitmap(width,
                                            height,
                                            System.Drawing.Imaging.PixelFormat.Format32bppRgb);
